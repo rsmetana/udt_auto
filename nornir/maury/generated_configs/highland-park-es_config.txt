@@ -1,0 +1,95 @@
+config system interface
+edit "x1"
+set status down
+set ip 10.16.0.1 255.255.128.0
+set description "::LAN"
+set allowaccess ping
+set device-identification enable
+set vdom root
+set type physical
+set role lan
+set dhcp-relay-service enable
+set dhcp-relay-ip 10.46.0.12 
+set dhcp-relay-request-all-server enable
+
+set secondary-IP enable
+config secondaryip
+edit 1
+    set ip 10.92.16.1 255.255.254.0
+    set allowaccess ping
+next
+end
+next
+edit "vlan10"
+set status up
+set ip 10.16.128.1 255.255.192.0
+set description "Voice"
+set allowaccess ping
+set device-identification enable
+set vdom root
+set type vlan
+set vlanid 10
+set role lan
+set interface x1
+
+set secondary-IP enable
+config secondaryip
+edit 1
+    set ip 10.93.56.1 255.255.255.0
+    set allowaccess ping
+next
+end
+next
+edit "vlan20"
+set status up
+set ip 10.16.192.1 255.255.192.0
+set description "Camera"
+set allowaccess ping
+set device-identification enable
+set vdom root
+set type vlan
+set vlanid 20
+set role lan
+set interface x1
+
+set secondary-IP enable
+config secondaryip
+edit 1
+    set ip 10.94.16.1 255.255.255.0
+    set allowaccess ping
+next
+end
+next
+edit "vlan50"
+set status up
+set ip 10.17.0.1 255.255.0.0
+set description "Student Traffic"
+set allowaccess ping
+set device-identification enable
+set vdom root
+set type vlan
+set vlanid 50
+set role lan
+set interface x1
+
+set dhcp-relay-service enable
+set dhcp-relay-ip 10.16.0.5 
+set dhcp-relay-request-all-server enable
+next
+end
+
+config system dhcp server
+
+edit 1 
+        set default-gateway 10.16.128.1
+        set interface "vlan10"
+        set netmask 255.255.192.0
+        config ip-range
+            edit 1
+                set start-ip 10.16.128.20
+                set end-ip 10.16.129.200
+            next
+        end
+    next
+
+end
