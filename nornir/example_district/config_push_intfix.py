@@ -12,7 +12,7 @@ def send_config_from_file(task):
     """
     Pushes a device-specific configuration file using Netmiko.
     """
-    config_file_path = f'./generated_configs/{task.host.name}_config.txt'
+    config_file_path = f'./intfix/{task.host.name}_config.txt'
 
     if not os.path.exists(config_file_path):
         tqdm.write(f"Config file not found for {task.host.name}. Skipping.")

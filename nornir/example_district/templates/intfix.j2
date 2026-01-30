@@ -1,0 +1,9 @@
+config system interface
+{% for interface in host.data.interfaces -%}
+edit "{{ interface.name }}"
+set monitor-bandwidth enable
+set device-identification disable
+set alias "{{ interface.name }}"
+next
+{% endfor -%}
+end

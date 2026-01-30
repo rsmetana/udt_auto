@@ -1,0 +1,12 @@
+---
+fortigates:
+  username: temp
+  password: udt
+  platform: fortinet
+  connection_options:
+    netmiko:
+      # Define how to handle the interactive prompt "y"
+      # send_config_set automatically handles these patterns when enabled
+      enable_config:
+         pattern to match: 'This operation will clear all table! Do you want to continue? (y/n)'
+         response to send: 'y'

@@ -1,0 +1,158 @@
+{# ================================================================= #}
+{#                   FIRST PASS: INTERFACE CONFIGURATION             #}
+{# ================================================================= #}
+config system interface
+{% for interface in host.data.interfaces -%}
+edit "{{ interface.name }}"
+{% if interface.type is defined and interface.type == 'vlan' %}
+set status up
+{% else %}
+set status down
+{% endif %}
+set ip {{ interface.ip }} {{ interface.mask }}
+set description "{{ interface.name }}"
+set allowaccess ping
+set role lan
+set device-identification disable
+set monitor-bandwidth enable
+set alias "{{ interface.name }}"
+set vdom root
+{%- if interface.type is defined and interface.type == 'vlan' %}
+
+set type vlan
+set vlanid {{ interface.name | replace("vlan", "") | int }}
+{% if interface.set_port is defined %}
+set interface {{ interface.set_port }}
+{% else %}
+set interface x1
+{% endif %}
+{% else %}
+
+set type physical
+{% endif %}
+{% if interface.helper is defined and interface.helper|length > 0 %}
+set dhcp-relay-service enable
+set dhcp-relay-ip {% for helper_ip in interface.helper %}{{ helper_ip }} {% endfor%}
+
+set dhcp-relay-request-all-server enable
+{% endif %}
+{% if interface.secondary_ip is defined and interface.secondary_ip|length > 0 %}
+
+set secondary-IP enable
+config secondaryip
+{% for secondary in interface.secondary_ip -%}
+edit {{ loop.index }}
+    set ip {{ secondary.ip }} {{ secondary.mask }}
+    set allowaccess ping
+next
+{% endfor -%}
+end
+{% endif %}
+next
+{% endfor %}
+end
+
+{# ================================================================= #}
+{#                   SECOND PASS: DHCP SERVER CONFIGURATION          #}
+{# ================================================================= #}
+{# Safely pre-filter: only interfaces where build_dhcp_server is defined AND True #}
+{% set dhcp_enabled = host.data.interfaces
+    | selectattr('build_dhcp_server', 'defined')
+    | selectattr('build_dhcp_server', 'equalto', True)
+    | list %}
+{% if dhcp_enabled | length > 0 %}
+config system dhcp server
+{% for interface in host.data.interfaces %}
+{# Check if 'build_dhcp_server' is explicitly True in the interface definition #}
+{% if interface.build_dhcp_server is defined and interface.build_dhcp_server == True %}
+{% set primary_ip = interface.ip %}
+{% set netmask = interface.mask %}
+{# Calculate prefix using standard Jinja2 split/join #}
+{% set network_prefix = primary_ip.split('.')[:-1] | join('.') %}
+    edit {{ loop.index }} 
+        set default-gateway {{ primary_ip }}
+        set interface "{{ interface.name }}"
+        set netmask {{ netmask }}
+        config ip-range
+            edit {{ loop.index }}
+                set start-ip {{ network_prefix }}.20
+                set end-ip {{ network_prefix }}.240
+            next
+        end
+        set dns-server1 23.180.88.53
+        set dns-server2 23.180.88.63
+    next
+{% endif %}
+{% endfor %}
+end
+{% endif %}
+
+{# ================================================================= #}
+{#                   THIRD PASS: STATIC ROUTE DOWN                   #}
+{# ================================================================= #}
+{# Run the whole static route block ONLY if any interface has route_down defined #}
+{% set route_down_ifaces = host.data.interfaces
+    | selectattr('route_down', 'defined')
+    | list %}
+{% if route_down_ifaces | length > 0 %}
+config router static
+{% set global_index = {"value": 2} -%}
+{%- for interface in host.data.interfaces -%}
+{%- if interface.route_down is defined and interface.route_down -%}
+{%- set primary_ip = interface.ip -%}
+{%- set ip_octets = primary_ip.split('.') -%}
+{%- set last_octet_int = ip_octets[-1] | int + 1 -%}
+{%- set computed_next_hop = (ip_octets[:-1] | join('.')) ~ '.' ~ (last_octet_int | string) -%}
+{%- for route in interface.route_down -%}
+{%- if route is string -%}
+{%- set dest = route -%}
+{%- set route_next_hop = None -%}
+{%- else -%}
+{%- set dest = route.dest -%}
+{%- set route_next_hop = route.next_hop | default(None, true) -%}
+{%- endif -%}
+{%- set effective_next_hop = route_next_hop if route_next_hop is not none else computed_next_hop -%}
+edit {{ global_index.value }}
+set gateway {{ effective_next_hop }}
+set device "{{ interface.name }}"
+set dst {{ dest }}
+next
+{% set __ = global_index.update({"value": global_index.value + 1}) -%}
+{% endfor %}
+{% endif %}
+{% endfor %}
+end
+
+{# ================= BGP runs at the end of the static route section ================= #}
+config router prefix-list
+    edit "default-route"
+        config rule
+            edit 1
+                set prefix 0.0.0.0 0.0.0.0
+                unset ge
+                unset le
+            next
+        end
+    next
+end
+config router route-map
+edit "static-to-bgp"
+        config rule
+            edit 1
+                set action deny
+                set match-ip-address "default-route"
+                unset set-ip-prefsrc
+            next
+            edit 2
+                unset set-ip-prefsrc
+            next
+        end
+    next
+end
+config router bgp
+    config redistribute "static"
+        set status enable
+        set route-map "static-to-bgp"
+    end
+end
+{% endif %}

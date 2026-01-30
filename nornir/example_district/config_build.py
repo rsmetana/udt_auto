@@ -17,7 +17,7 @@ def generate_config_file(task: Task):
     )
     
     # Ensure output directory exists
-    output_dir = "./generated_configs"
+    output_dir = "./interface_config"
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)
 

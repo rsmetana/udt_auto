@@ -1,0 +1,75 @@
+interface BDI1
+ description Farragut HS LAN
+ ip address 96.4.97.193 255.255.255.240 secondary
+ ip address 10.32.0.1 255.255.0.0
+ ip helper-address 10.55.22.190
+ ip helper-address 10.1.43.110
+ ip helper-address 10.100.13.16
+ ip helper-address 10.100.13.90
+ ip pim sparse-mode
+ ip access-group VOICE_REG in
+interface BDI2
+ description Management
+ ip address 10.132.32.1 255.255.252.0
+ ip helper-address 10.55.22.190
+ ip helper-address 10.1.43.110
+ ip helper-address 10.100.13.16
+ ip helper-address 10.100.13.90
+interface BDI3
+ description Phones
+ ip address 10.132.36.1 255.255.252.0
+ ip helper-address 10.100.13.16
+ ip helper-address 10.100.13.90
+ ip helper-address 10.55.22.190
+ ip helper-address 10.1.43.110
+interface BDI4
+ description Guest
+ ip address 10.132.40.1 255.255.248.0
+ ip helper-address 10.55.22.190
+ ip helper-address 10.1.43.110
+ ip helper-address 10.100.13.16
+ ip helper-address 10.100.13.90
+interface BDI5
+ description Utility
+ ip address 10.132.48.1 255.255.240.0
+ ip helper-address 10.100.13.16
+ ip helper-address 10.100.13.90
+ ip helper-address 10.55.22.190
+ ip helper-address 10.1.43.110
+interface BDI6
+ description Staff
+ ip address 10.132.64.1 255.255.240.0
+ ip helper-address 10.1.43.110
+ ip helper-address 10.55.22.190
+ ip helper-address 10.100.13.16
+ ip helper-address 10.100.13.90
+ ip pim sparse-mode
+interface BDI7
+ description Security
+ ip address 10.132.80.1 255.255.240.0
+ ip helper-address 10.55.22.190
+ ip helper-address 10.1.43.110
+ ip helper-address 10.100.13.16
+ ip helper-address 10.100.13.90
+interface BDI8
+ description Student
+ ip address 10.132.128.1 255.255.192.0
+ ip helper-address 10.55.22.190
+ ip helper-address 10.1.43.110
+ ip helper-address 10.100.13.16
+ ip helper-address 10.100.13.90
+ ip pim sparse-mode
+interface BDI9
+ description Reserved9
+ no ip address
+ ip helper-address 10.55.22.190
+ ip helper-address 10.1.43.110
+ ip helper-address 10.100.13.16
+ ip helper-address 10.100.13.90
+interface BDI10
+ description Reserved10
+ no ip address
+ ip helper-address 10.55.22.190
+ ip helper-address 10.1.43.110
+ ip helper-address 10.100.13.16
+ ip helper-address 10.100.13.90

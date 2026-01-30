@@ -1,0 +1,61 @@
+config system settings
+    set bfd enable
+end
+config router bgp
+    config neighbor
+        delete 100.127.253.1
+    end
+end
+config vpn ipsec phase2-interface
+purge
+y
+
+end
+config vpn ipsec phase1-interface
+purge
+y
+
+config system central-management
+    unset fmg-source-ip
+end
+config log fortianalyzer setting
+    unset source-ip
+end
+y
+
+config user tacacs+
+    edit "anycast"
+        unset source-ip
+    next
+end
+config system fortiguard
+    unset source-ip
+end
+config system ntp
+    unset source-ip
+end
+config system dns
+    unset source-ip
+end
+config system central-management 
+    set fmg-source-ip {{host.hostname}}
+end
+config log fortianalyzer setting
+    set source-ip "{{host.hostname}}"
+end
+y
+
+config user tacacs+
+    edit "anycast"
+        set source-ip "{{host.hostname}}"
+    next
+end
+config system fortiguard
+    set source-ip {{host.hostname}}
+end
+config system ntp
+    set source-ip {{host.hostname}}
+end
+config system dns
+    set source-ip {{host.hostname}}
+end
