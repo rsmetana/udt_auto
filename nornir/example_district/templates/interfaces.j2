@@ -9,7 +9,9 @@ set status up
 {% else %}
 set status down
 {% endif %}
+{% if interface.ip is defined and interface.mask is defined %}
 set ip {{ interface.ip }} {{ interface.mask }}
+{% else %}
 set description "{{ interface.name }}"
 set allowaccess ping
 set role lan
@@ -122,8 +124,15 @@ next
 {% endif %}
 {% endfor %}
 end
+{% endif %}
 
+{# Determine if any interface has head_end: true #}
+{% set head_end_ifaces = host.data.interfaces
+    | selectattr('head_end', 'defined')
+    | selectattr('head_end', 'equalto', true)
+    | list %}
 {# ================= BGP runs at the end of the static route section ================= #}
+{% if head_end_ifaces | length == 0 %}
 config router prefix-list
     edit "default-route"
         config rule
@@ -153,6 +162,14 @@ config router bgp
     config redistribute "static"
         set status enable
         set route-map "static-to-bgp"
+    end
+end
+{% endif %}
+{# Run BGP if any interface has head_end: true #}
+{% if head_end_ifaces | length > 0 %}
+config router bgp
+    config redistribute "static"
+        set status enable
     end
 end
 {% endif %}
