@@ -1,0 +1,17 @@
+config system dhcp server
+purge
+y
+end
+config firewall address
+{% for interface in host.data.interfaces if interface.get('type') == 'vlan' %}
+delete "{{ interface.name }} address"
+{% endfor %}
+end
+config system interface
+{% for interface in host.data.interfaces if interface.get('type') == 'vlan' %}
+delete "{{ interface.name }}"
+{% endfor %}
+next
+edit x1
+unset ip
+end
