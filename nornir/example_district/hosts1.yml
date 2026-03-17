@@ -1,0 +1,92 @@
+
+cherokee-es:
+  hostname: 100.98.137.130
+  groups:
+    - fortigates
+  data:
+    interfaces:
+    
+fairmont-es:
+  hostname: 100.98.137.131
+  groups:
+    - fortigates
+  data:
+    interfaces:
+    
+indian-trail-ms:
+  hostname: 100.98.137.132
+  groups:
+    - fortigates
+  data:
+    interfaces:
+    
+johnson-city-dist-bldg:
+  hostname: 100.98.137.133
+  groups:
+    - fortigates
+  data:
+    interfaces:
+    
+lake-ridge-es:
+  hostname: 100.98.137.134
+  groups:
+    - fortigates
+  data:
+    interfaces:
+    
+maint-dept:
+  hostname: 100.98.137.135
+  groups:
+    - fortigates
+  data:
+    interfaces:
+    
+mountain-view-es:
+  hostname: 100.98.137.136
+  groups:
+    - fortigates
+  data:
+    interfaces:
+    
+science-hill-hs-ia:
+  hostname: 100.98.137.128
+  groups:
+    - fortigates
+  data:
+    interfaces:
+    
+science-hill-hs:
+  hostname: 100.98.137.129
+  groups:
+    - fortigates
+  data:
+    interfaces:
+    
+science-hill-topper-acad:
+  hostname: 100.98.137.137
+  groups:
+    - fortigates
+  data:
+    interfaces:
+    
+south-side-es:
+  hostname: 100.98.137.138
+  groups:
+    - fortigates
+  data:
+    interfaces:
+    
+towne-acres-es:
+  hostname: 100.98.137.139
+  groups:
+    - fortigates
+  data:
+    interfaces:
+    
+woodland-es:
+  hostname: 100.98.137.140
+  groups:
+    - fortigates
+  data:
+    interfaces:
+    
