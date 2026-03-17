@@ -1,6 +1,6 @@
 import csv
 
-with open('hosts.csv') as objects, open("hosts1.yml", "w") as outfile:
+with open('hosts.csv') as objects, open("hosts.yml", "w") as outfile:
     reader = csv.reader(objects)
     object_list = csv.reader(objects)
     for row in object_list:
